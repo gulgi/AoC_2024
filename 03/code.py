@@ -7,12 +7,15 @@ class Part(Enum):
     Two = 2
 
 def main():
+    # Part 1 or 2. Test or not?
     part = Part.Two if set(["2", "two"]) & set(sys.argv) else Part.One
     test = True if "test" in sys.argv else False
 
+    # Read in file
     file = open("test.txt" if test else "input.txt")
     input = file.read()
 
+    # CODE
     match_string = "mul\\((\\d{1,4})\\,(\\d{1,4})\\)"
     num = 0
     if part != Part.One:
@@ -39,6 +42,7 @@ def main():
                 break
             index = index1
 
+    # Output
     print("Part: ", part, " Test: ", test)
     print("Num: ", num)
 
