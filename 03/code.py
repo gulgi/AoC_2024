@@ -28,7 +28,7 @@ def main():
             index1 = input.find("don't()", index)
             all = None
             if index1 == -1:
-                all = re.findall(match_string, input[index:])
+                all = re.findall(match_string, input[index:]) # This is annoying
             else:
                 all = re.findall(match_string, input[index:index1])
             for first, second in all:
