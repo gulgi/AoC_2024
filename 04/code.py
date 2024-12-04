@@ -6,6 +6,7 @@ class Part(Enum):
     One = 1,
     Two = 2
 
+# Not pretty at all
 def fix_input_1(file_name):
     file = open(file_name)
     lines = file.read().split()
@@ -28,7 +29,6 @@ def fix_input_1(file_name):
                 break
             line += lines[y+x][x]
         diag1_lines.append(line)
-        #print(f"DIAG: ", line)
     for x in range(1, len(lines[0])):
         line = ""
         for y in range(0, len(lines[0])):
@@ -36,7 +36,6 @@ def fix_input_1(file_name):
                 break
             line += lines[y][x+y]
         diag1_lines.append(line)
-        #print(f"DIAG: ", line)
 
     diag2_lines = []
     for y in range(0, height-3):
