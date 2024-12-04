@@ -5,51 +5,40 @@ class Part(Enum):
     One = 1,
     Two = 2
 
+def is_data_safe(data):
+    diff = data[0] - data[1]
+    valid = [1, 2, 3] if diff > 0 else [-1, -2, -3]
+    for i in range(1, len(data)):
+        diff = data[i-1] - data[i]
+        if diff not in valid:
+            return False, i-1
+    return True, -1
+
 def main():
     # Part 1 or 2. Test or not?
     part = Part.Two if set(["2", "two"]) & set(sys.argv) else Part.One
     test = True if "test" in sys.argv else False
+    file_name = "test.txt" if test else "input.txt"
 
     # CODE
-    num = 0
-    with open("test.txt" if test else "input.txt") as file:
-        for line in file:
-            numbers = list(map(int, line.split()))
-            diff = numbers[0] - numbers[1]
-            bad_index = -1
-            if diff > 0 and diff <= 3:
-                for i in range(1, len(numbers)):
-                    diff = numbers[i-1] - numbers[i]
-                    if diff <= 0 or diff > 3:
-                        bad_index = i
-                        break
-                if bad_index != -1 and part == Part.Two:
-                    del numbers[bad_index]
-                    bad_index = -1
-                    for i in range(1, len(numbers)):
-                        diff = numbers[i-1] - numbers[i]
-                        if diff <= 0 or diff > 3:
-                            bad_index = i
-                            break
-            elif diff < 0 and diff >= -3:
-                for i in range(1, len(numbers)):
-                    diff = numbers[i-1] - numbers[i]
-                    if diff >= 0 or diff < -3:
-                        bad_index = i
-                        break
-                if bad_index != -1 and part == Part.Two:
-                    del numbers[bad_index]
-                    bad_index = -1
-                    for i in range(1, len(numbers)):
-                        diff = numbers[i-1] - numbers[i]
-                        if diff >= 0 or diff < -3:
-                            bad_index = i
-                            break
-            elif diff == 0:
-                bad_index = 1
-            if bad_index == -1:
-                num += 1
+    with open(file_name) as f:
+        num = 0
+        for line in f:
+            data = list(map(int, line.split()))
+            is_ok, bad_index = is_data_safe(data)
 
+            if part == Part.Two and is_ok == False:
+                indices = list(set([0, bad_index, bad_index + 1]))
+                for index in indices:
+                    data0 = data.copy()
+                    del data0[index]
+                    is_ok, bad_index = is_data_safe(data0)
+                    if is_ok == True:
+                        break
+            
+            if is_ok == True:
+                num += 1
+        
     # Output
     print("Part: ", part, " Test: ", test)
     print("Num: ", num)

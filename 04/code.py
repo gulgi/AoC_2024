@@ -6,7 +6,7 @@ class Part(Enum):
     One = 1,
     Two = 2
 
-def fix_input(file_name):
+def fix_input_1(file_name):
     file = open(file_name)
     lines = file.read().split()
 
@@ -59,27 +59,44 @@ def fix_input(file_name):
     lines += diag2_lines
     return lines
 
+def fix_input_2(file_name):
+    file = open(file_name)
+    lines = file.read().split()
+    return lines
+
 def main():
     # Part 1 or 2. Test or not?
     part = Part.Two if set(["2", "two"]) & set(sys.argv) else Part.One
     test = True if "test" in sys.argv else False
     file_name = "test.txt" if test else "input.txt"
 
-    # Read in file
-    lines = fix_input(file_name)
-
-    # CODE
-    match_string1 = "(X.*M.*A.*S)"
-    match_string2 = "(S.*A.*M.*X)"
     num = 0
     if part == Part.One:
+        # Read in file
+        lines = fix_input_1(file_name)
+
+        # CODE
+        match_string1 = "XMAS"
+        match_string2 = "SAMX"
         for line in lines:
             all1 = re.findall(match_string1, line)
             all2 = re.findall(match_string2, line)
-            if len(all1) > 0 or len(all2) > 0:
-                print(line)
-                print(f"all1: {all1}  all2: {all2}")
-                num += len(all1) + len(all2)
+            num += len(all1) + len(all2)
+    else:
+        lines = fix_input_2(file_name)
+
+        # CODE #2
+        width = len(lines[0])
+        height = len(lines)
+        for y in range(1, height-1):
+            for x in range(1, width-1):
+                if lines[y][x] == 'A':
+                    xy0 = lines[y-1][x-1]
+                    xy1 = lines[y+1][x+1]
+                    xy2 = lines[y-1][x+1]
+                    xy3 = lines[y+1][x-1]
+                    if ((xy0 == 'M' and xy1 == 'S') or (xy0 == 'S' and xy1 == 'M')) and ((xy2 == 'M' and xy3 == 'S') or (xy2 == 'S' and xy3 == 'M')):
+                        num += 1
 
     # Output
     print("Part: ", part, " Test: ", test)
@@ -87,7 +104,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
-# 1575 is too low
-
-# 27145 is too high
