@@ -31,7 +31,7 @@ def main():
     # CODE
     num = 0
     for line in lines:
-        pages = list(map(int, line.strip().split(',')))
+        pages = list(map(int, line.split(',')))
         corrected = sorted(pages, key=cmp_to_key(comp))
         if (part == Part.One and corrected == pages) or (part == Part.Two and corrected != pages):
             num += corrected[len(corrected) // 2]
