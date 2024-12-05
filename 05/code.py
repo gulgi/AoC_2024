@@ -1,7 +1,5 @@
 from enum import Enum
 import sys
-import re
-from itertools import permutations
 from functools import cmp_to_key
 
 rules = {}
@@ -42,12 +40,9 @@ def main():
     num = 0
     for line in lines:
         pages = list(map(int, line.strip().split(',')))
-
         corrected = sorted(pages, key=cmp_to_key(compare_to_rules))
-        if part == Part.One and corrected == pages:
-            num += corrected[ int(len(corrected)/2)]
-        elif part == Part.Two and corrected != pages:
-            num += corrected[ int(len(corrected)/2)]
+        if (part == Part.One and corrected == pages) or (part == Part.Two and corrected != pages):
+            num += corrected[len(corrected) // 2]
 
     # Output
     print("Part: ", part, " Test: ", test)
