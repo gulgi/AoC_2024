@@ -18,7 +18,7 @@ def main():
     # CODE
     match_string = "mul\\((\\d{1,4})\\,(\\d{1,4})\\)"
     num = 0
-    if part != Part.One:
+    if part == Part.One:
         all = re.findall(match_string, input)
         for first, second in all:
             num += int(first)*int(second)
