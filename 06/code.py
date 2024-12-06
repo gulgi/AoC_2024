@@ -36,21 +36,25 @@ def new_dir(old_dir):
         case (0, 1):
             return (1, 0)
 
-def guard_move(data, guard_pos, guard_dir):
+def guard_move(data, guard_pos, guard_dir, dir_set):
     new_pos = (guard_pos[0] + guard_dir[0], guard_pos[1] + guard_dir[1])
     inside = False if new_pos[1] < 0 or new_pos[1] >= len(data[0]) or new_pos[0] < 0 or new_pos[0] >= len(data) else True
+    loop = False
 
     if inside:
         if data[new_pos[0]][new_pos[1]] == '#':
             guard_dir = new_dir(guard_dir)
-#            print(f"Turn pos {guard_pos}, dir {guard_dir}")
+            dir = (new_pos[0], new_pos[1], guard_dir[0], guard_dir[1])
+            if dir in dir_set:
+                loop = True
+            dir_set.add(dir)
         else:
             guard_pos = new_pos
     else:
         guard_pos = new_pos
 
 #    print(f"New pos {guard_pos}, dir {guard_dir} inside {inside}")
-    return guard_pos, guard_dir, inside
+    return guard_pos, guard_dir, inside, loop
 
 def main():
     # Part 1 or 2. Test or not?
@@ -68,10 +72,11 @@ def main():
     num = 0
     positions = set()
     positions.add(guard_pos)
+    dir_set = set()
 
     if part == Part.One:
         while True:
-            guard_pos, guard_dir, inside = guard_move(data, guard_pos, guard_dir)
+            guard_pos, guard_dir, inside, loop = guard_move(data, guard_pos, guard_dir, dir_set)
             if not inside:
                 num = len(positions)
                 break
@@ -80,32 +85,26 @@ def main():
         loops = 0
         blocking_positions = set()
         while True:
-            mod_guard_pos, mod_guard_dir, mod_inside = guard_move(data, guard_pos, guard_dir)
+            mod_guard_pos, mod_guard_dir, mod_inside, loop = guard_move(data, guard_pos, guard_dir, dir_set)
             if mod_guard_dir == guard_dir and mod_inside and mod_guard_pos not in blocking_positions and mod_guard_pos not in positions:
-                mod_positions = set()
                 mod_data = data.copy()
+                mod_dir_set = dir_set.copy()
                 mod_data[mod_guard_pos[0]] = mod_data[mod_guard_pos[0]][:mod_guard_pos[1]] + '#' + mod_data[mod_guard_pos[0]][mod_guard_pos[1]+1:]
                 blocking_pos = mod_guard_pos
                 blocking_positions.add(blocking_pos)
                 mod_guard_pos = guard_pos
                 mod_guard_dir = guard_dir
                 mod_inside = True
-                this_loop = 0
                 while True:
-                    mod_guard_pos, mod_guard_dir_new, mod_inside = guard_move(mod_data, mod_guard_pos, mod_guard_dir)
+                    mod_guard_pos, mod_guard_dir_new, mod_inside, loop = guard_move(mod_data, mod_guard_pos, mod_guard_dir, mod_dir_set)
+                    if loop:
+                        loops += 1
+                        break
                     if not mod_inside:
                         break
-                    mod_num = len(mod_positions)
-                    mod_positions.add(mod_guard_pos)
-                    if mod_num == len(mod_positions) and mod_guard_dir_new == mod_guard_dir:
-                        this_loop += 1
-                        if this_loop > 1000: # ugly, but to not have this, we need to record direction at each step :P 
-                            #print(f"LOOP !!!  {blocking_pos}")
-                            loops += 1
-                            break
                     mod_guard_dir = mod_guard_dir_new
 
-            guard_pos, guard_dir, inside = guard_move(data, guard_pos, guard_dir)
+            guard_pos, guard_dir, inside, loop = guard_move(data, guard_pos, guard_dir, dir_set)
             if not inside:
                 break
             positions.add(guard_pos)
