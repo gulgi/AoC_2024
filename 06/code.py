@@ -8,17 +8,22 @@ class Part(Enum):
 
 def guard_init(data):
     for y in range(0, len(data)):
-        for x in range(0, len(data[0])):
-            c = data[y][x]
-            if c == '^':
-                pos = (y,x)
-                dir = (-1, 0)
-                break
-    #print(f"Init pos {pos}, dir {dir}")
+        x = data[y].find('^')
+        if x != -1:
+            pos = (y,x)
+            dir = (-1, 0)
+            break
     return pos, dir
 
 def new_dir(old_dir):
     return (old_dir[1], -old_dir[0])
+
+def move_forward(data, guard_pos, guard_dir):
+    new_pos = (guard_pos[0] + guard_dir[0], guard_pos[1] + guard_dir[1])
+    inside = False if new_pos[1] < 0 or new_pos[1] >= len(data[0]) or new_pos[0] < 0 or new_pos[0] >= len(data) else True
+    if not inside or data[new_pos[0]][new_pos[1]] == '#':
+        return new_pos, False
+    return new_pos, True
 
 def guard_move(data, guard_pos, guard_dir, dir_set):
     new_pos = (guard_pos[0] + guard_dir[0], guard_pos[1] + guard_dir[1])
@@ -69,24 +74,21 @@ def main():
         loops = 0
         blocking_positions = set()
         while True:
-            mod_guard_pos, mod_guard_dir, mod_inside, loop = guard_move(data, guard_pos, guard_dir, dir_set)
-            if mod_guard_dir == guard_dir and mod_inside and mod_guard_pos not in blocking_positions and mod_guard_pos not in positions:
+            next_guard_pos, moved_forward = move_forward(data, guard_pos, guard_dir)
+            if moved_forward and next_guard_pos not in blocking_positions:
                 mod_data = data.copy()
+                mod_data[next_guard_pos[0]] = mod_data[next_guard_pos[0]][:next_guard_pos[1]] + '#' + mod_data[next_guard_pos[0]][next_guard_pos[1]+1:]
                 mod_dir_set = dir_set.copy()
-                mod_data[mod_guard_pos[0]] = mod_data[mod_guard_pos[0]][:mod_guard_pos[1]] + '#' + mod_data[mod_guard_pos[0]][mod_guard_pos[1]+1:]
-                blocking_pos = mod_guard_pos
-                blocking_positions.add(blocking_pos)
+                blocking_positions.add(next_guard_pos)
                 mod_guard_pos = guard_pos
                 mod_guard_dir = guard_dir
-                mod_inside = True
                 while True:
-                    mod_guard_pos, mod_guard_dir_new, mod_inside, loop = guard_move(mod_data, mod_guard_pos, mod_guard_dir, mod_dir_set)
+                    mod_guard_pos, mod_guard_dir, mod_inside, loop = guard_move(mod_data, mod_guard_pos, mod_guard_dir, mod_dir_set)
                     if loop:
                         loops += 1
                         break
                     if not mod_inside:
                         break
-                    mod_guard_dir = mod_guard_dir_new
 
             guard_pos, guard_dir, inside, loop = guard_move(data, guard_pos, guard_dir, dir_set)
             if not inside:
