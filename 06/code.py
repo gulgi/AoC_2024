@@ -10,31 +10,15 @@ def guard_init(data):
     for y in range(0, len(data)):
         for x in range(0, len(data[0])):
             c = data[y][x]
-            if c in '<>^v':
+            if c == '^':
                 pos = (y,x)
-                match c:
-                    case '<':
-                        dir = (0, -1)
-                    case '>':
-                        dir = (0, 1)
-                    case '^':
-                        dir = (-1, 0)
-                    case 'v':
-                        dir = (1, 0)
+                dir = (-1, 0)
                 break
     #print(f"Init pos {pos}, dir {dir}")
     return pos, dir
 
 def new_dir(old_dir):
-    match old_dir:
-        case (1, 0):
-            return (0, -1)
-        case (0, -1):
-            return (-1, 0)
-        case (-1, 0):
-            return (0, 1)
-        case (0, 1):
-            return (1, 0)
+    return (old_dir[1], -old_dir[0])
 
 def guard_move(data, guard_pos, guard_dir, dir_set):
     new_pos = (guard_pos[0] + guard_dir[0], guard_pos[1] + guard_dir[1])
