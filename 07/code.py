@@ -10,6 +10,9 @@ def sum(concat, actual_sum, number, numbers, depth):
         if actual_sum == number:
             return True
         return False
+    
+    if number > actual_sum:
+        return False
 
     sum_number = number + numbers[depth]
     if sum(concat, actual_sum, sum_number, numbers, depth-1):
