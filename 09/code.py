@@ -29,7 +29,6 @@ def first_free_memory(blocks, size, before):
     for block in blocks:
         free_size = block['pos'] - index 
         if index < block['pos'] and free_size >= size:
-#            print(f"returning free space: {free_size}")
             return index, previous_block
         previous_block = block
         index = block['pos'] + block['blocks']
@@ -62,20 +61,22 @@ def defragment(blocks):
         defrag_one_block(blocks, free_pos, previous_block)
 
 def move_blocks(blocks):
-    times = 0
-    for block in reversed(blocks):
+    last_id = blocks[-1]['id']
+    for id in range(last_id, -1, -1):
+        block = None
+        for b in reversed(blocks):
+            if b['id'] == id:
+                block = b
+                break
+        if block == None:
+            continue
+
         size = block['blocks']
         free_pos, previous_block = first_free_memory(blocks, size, block['pos'])
         if free_pos >= 0:
-#            print(f"Found spot {free_pos}, size {size} for {block['id']}")
             blocks.remove(block)
             block['pos'] = free_pos
             blocks.insert(blocks.index(previous_block)+1, block)
-
- #       times = times + 1
- #       if times > 10:
- #           break
-        #break
 
 def main():
     # Part 1 or 2. Test or not?
@@ -110,12 +111,12 @@ def main():
         index = index + 1
 
     # CODE
-    print_memory(blocks)
+#    print_memory(blocks)
     if part == Part.One:
         defragment(blocks)
     else:
         move_blocks(blocks)
-    print_memory(blocks)
+#    print_memory(blocks)
 
     num = calculate_checksum(blocks)
 
@@ -126,4 +127,3 @@ def main():
 if __name__=="__main__":
     main()
 
-# 9813645302006 too high
