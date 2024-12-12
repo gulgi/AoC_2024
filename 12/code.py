@@ -22,79 +22,63 @@ def main():
 
     width = len(data[0])
     height = len(data)
-    if part == Part.One:
-        done = set()
-        for y in range(0, height):
-            for x in range(0, width):
+
+    done = set()
+    for y_ in range(0, height):
+        for x_ in range(0, width):
+            if (x_,y_) in done:
+                continue
+
+            to_visit = []
+            area = 0
+            fence = 0
+            letter = '_'                
+            to_visit.append((x_,y_))
+            letter = data[y_][x_]
+            while len(to_visit) > 0:
+                x,y = to_visit.pop()
                 if (x,y) in done:
                     continue
 
-                to_visit = []
-                area = 0
-                fence = 0
-                letter = '_'                
-                to_visit.append((x,y))
-                letter = data[y][x]
-                while len(to_visit) > 0:
-                    x,y = to_visit.pop()
-                    if (x,y) in done:
-                        continue
+                done.add((x,y))
+                area += 1
 
-                    done.add((x,y))
-                    area += 1
+                # up
+                if y == 0:
+                    fence += 1
+                elif letter != data[y-1][x]:
+                    fence += 1
+                else: #if letter == data[y-1][x]:
+                    to_visit.append((x, y-1))
 
-                    # up
-                    if y == 0:
-                        fence += 1
-                    elif letter != data[y-1][x]:
-                        fence += 1
-                    else: #if letter == data[y-1][x]:
-                        to_visit.append((x, y-1))
+                # left
+                if x == 0:
+                    fence += 1
+                elif letter != data[y][x-1]:
+                    fence += 1
+                else: #if letter == data[y][x-1]:
+                    to_visit.append((x-1, y))
 
-                    # left
-                    if x == 0:
-                        fence += 1
-                    elif letter != data[y][x-1]:
-                        fence += 1
-                    else: #if letter == data[y][x-1]:
-                        to_visit.append((x-1, y))
+                # down
+                if y == height-1:
+                    fence += 1
+                elif letter != data[y+1][x]:
+                    fence += 1
+                else: #if letter == data[y+1][x]:
+                    to_visit.append((x, y+1))
 
-                    # down
-                    if y == height-1:
-                        fence += 1
-                    elif letter != data[y+1][x]:
-                        fence += 1
-                    else: #if letter == data[y+1][x]:
-                        to_visit.append((x, y+1))
+                # right                        
+                if x == width-1:
+                    fence += 1
+                elif letter != data[y][x+1]:
+                    fence += 1
+                else: # if letter == data[y][x+1]:
+                    to_visit.append((x+1, y))
 
-                    # right                        
-                    if x == width-1:
-                        fence += 1
-                    elif letter != data[y][x+1]:
-                        fence += 1
-                    else: # if letter == data[y][x+1]:
-                        to_visit.append((x+1, y))
+            ##print(f"{letter} {area} * {fence} => {area*fence}")
+            num += area * fence
 
-                print(f"{letter} {area} * {fence} => {area*fence}")
-                num += area * fence
-    if part == Part.Two:
-        fence = DefaultDict(lambda: 0)
-        area = DefaultDict(lambda: 0)
-        for y in range(0, height):
-            for x in range(0, width):
-                letter = data[y][x]
-                area[letter] += 1
-                if y == 0 or letter != data[y-1][x]:
-                    fence[letter] += 1
-                if x == 0 or letter != data[y][x-1]:
-                    fence[letter] += 1
-                if y == height or letter != data[y+1][x]:
-                    fence[letter] += 1
-                if x == width or letter != data[y][x+1]:
-                    fence[letter] += 1
-        total_area = sum(area.values())
-        total_fence = sum(fence.values())
-        num = total_area * total_fence
+#    print(f"done: {len(done)}  {width} x {height} => {height*width}")
 
     # Output
     print("Part: ", part, " Test: ", test)
