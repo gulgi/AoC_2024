@@ -80,78 +80,60 @@ def main():
             #blocks ...
             def num_edges():
                 num = 0
-                for y in range(0, height): # upper edge
-                    in_edge = False
+                for y in range(0, height): # upper/lower edge
+                    in_edge, in_edge2 = False, False
                     for x in range(0, width):
                         if (x,y) in blocks:
                             if y == 0 or (x,y-1) not in blocks:
                                 in_edge = True
-#                                print(f"UP edge {(x,y)}")
                             else:
                                 if in_edge:
                                     num += 1
                                     in_edge = False
-                        else:
-                            if in_edge:
-                                num += 1
-                                in_edge = False
-                    if in_edge:
-                        num += 1
 
-                for y in range(height-1, -1, -1): # lower edge
-                    in_edge = False
-                    for x in range(0, width):
-                        if (x,y) in blocks:
                             if y == height-1 or (x,y+1) not in blocks:
-                                in_edge = True
-#                                print(f"DOWN edge {(x,y)}")
+                                in_edge2 = True
                             else:
-                                if in_edge:
+                                if in_edge2:
                                     num += 1
-                                    in_edge = False
+                                    in_edge2 = False
                         else:
                             if in_edge:
                                 num += 1
-                                in_edge = False
+                            if in_edge2:
+                                num += 1
+                            in_edge, in_edge2 = False, False
                     if in_edge:
                         num += 1
+                    if in_edge2:
+                        num += 1
 
-                for x in range(0, width): # left edge
-                    in_edge = False
+                for x in range(0, width): # left/right edge
+                    in_edge, in_edge2 = False, False
                     for y in range(0, height):
                         if (x,y) in blocks:
                             if x == 0 or (x-1,y) not in blocks:
                                 in_edge = True
-#                                print(f"LEFT edge {(x,y)}")
                             else:
                                 if in_edge:
                                     num += 1
                                     in_edge = False
-                        else:
-                            if in_edge:
-                                num += 1
-                                in_edge = False
-                    if in_edge:
-                        num += 1
-
-                for x in range(width-1, -1, -1): # right edge
-                    in_edge = False
-                    for y in range(0, height):
-                        if (x,y) in blocks:
                             if x == width-1 or (x+1,y) not in blocks:
-                                in_edge = True
-#                                print(f"RIGHT edge {(x,y)}")
+                                in_edge2 = True
                             else:
-                                if in_edge:
+                                if in_edge2:
                                     num += 1
-                                    in_edge = False
+                                    in_edge2 = False
                         else:
                             if in_edge:
                                 num += 1
-                                in_edge = False
+                            if in_edge2:
+                                num += 1
+                            in_edge, in_edge2 = False, False
                     if in_edge:
                         num += 1
-
+                    if in_edge2:
+                        num += 1
                 return num
 
             if part == Part.One:
