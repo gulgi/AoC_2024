@@ -29,6 +29,7 @@ def main():
             if (x_,y_) in done:
                 continue
 
+            blocks = set()
             to_visit = []
             area = 0
             fence = 0
@@ -41,6 +42,7 @@ def main():
                     continue
 
                 done.add((x,y))
+                blocks.add((x,y))
                 area += 1
 
                 # up
@@ -75,10 +77,91 @@ def main():
                 else: # if letter == data[y][x+1]:
                     to_visit.append((x+1, y))
 
-            ##print(f"{letter} {area} * {fence} => {area*fence}")
-            num += area * fence
+            #blocks ...
+            def num_edges():
+                num = 0
+                for y in range(0, height): # upper edge
+                    in_edge = False
+                    for x in range(0, width):
+                        if (x,y) in blocks:
+                            if y == 0 or (x,y-1) not in blocks:
+                                in_edge = True
+#                                print(f"UP edge {(x,y)}")
+                            else:
+                                if in_edge:
+                                    num += 1
+                                    in_edge = False
+                        else:
+                            if in_edge:
+                                num += 1
+                                in_edge = False
+                    if in_edge:
+                        num += 1
 
-#    print(f"done: {len(done)}  {width} x {height} => {height*width}")
+                for y in range(height-1, -1, -1): # lower edge
+                    in_edge = False
+                    for x in range(0, width):
+                        if (x,y) in blocks:
+                            if y == height-1 or (x,y+1) not in blocks:
+                                in_edge = True
+#                                print(f"DOWN edge {(x,y)}")
+                            else:
+                                if in_edge:
+                                    num += 1
+                                    in_edge = False
+                        else:
+                            if in_edge:
+                                num += 1
+                                in_edge = False
+                    if in_edge:
+                        num += 1
+
+                for x in range(0, width): # left edge
+                    in_edge = False
+                    for y in range(0, height):
+                        if (x,y) in blocks:
+                            if x == 0 or (x-1,y) not in blocks:
+                                in_edge = True
+#                                print(f"LEFT edge {(x,y)}")
+                            else:
+                                if in_edge:
+                                    num += 1
+                                    in_edge = False
+                        else:
+                            if in_edge:
+                                num += 1
+                                in_edge = False
+                    if in_edge:
+                        num += 1
+
+                for x in range(width-1, -1, -1): # right edge
+                    in_edge = False
+                    for y in range(0, height):
+                        if (x,y) in blocks:
+                            if x == width-1 or (x+1,y) not in blocks:
+                                in_edge = True
+#                                print(f"RIGHT edge {(x,y)}")
+                            else:
+                                if in_edge:
+                                    num += 1
+                                    in_edge = False
+                        else:
+                            if in_edge:
+                                num += 1
+                                in_edge = False
+                    if in_edge:
+                        num += 1
+
+                return num
+
+            if part == Part.One:
+                num += area * fence
+            else:
+                edges = num_edges()
+#                print(f"{letter} => edges {edges}")
+                num += area * edges
+
+            ##print(f"{letter} {area} * {fence} => {area*fence}")
 
     # Output
     print("Part: ", part, " Test: ", test)
@@ -86,6 +169,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
-# too low  1477448
-# too low  1477740
