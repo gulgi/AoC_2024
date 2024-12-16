@@ -160,3 +160,6 @@ if __name__=="__main__":
     main()
 
 ##  1510330  too low
+
+## Test works. Dammit.
+##  What edge case goes bad? :/ 
