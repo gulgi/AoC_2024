@@ -10,6 +10,13 @@ class Part(Enum):
     One = 1,
     Two = 2
 
+def count_warehouse(warehouse):
+    lefts, rights = 0, 0
+    for line in warehouse:
+        lefts += line.count("[")
+        rights += line.count("]")
+    return lefts, rights
+
 def main():
     # Part 1 or 2. Test or not?
     part = Part.Two if set(["2", "two"]) & set(sys.argv) else Part.One
@@ -24,6 +31,7 @@ def main():
     inputs = inputs.replace('\n', '')
     warehouse = list(map(list, data.split('\n')))
 
+    lefts, rights = 0,0
     # Modify data for part 2
     if part == Part.Two:
         w2 = warehouse
@@ -46,9 +54,10 @@ def main():
             w2[index] = line2
             index += 1
         warehouse = w2
+        lefts, rights = count_warehouse(warehouse)
 
-    print(f"warehouse {warehouse}")
-    print(f"input {inputs}")
+#    print(f"warehouse {warehouse}")
+#    print(f"input {inputs}")
 
     def find_start():
         for y in range(1, len(warehouse)-1):
@@ -67,11 +76,22 @@ def main():
         dir = arrows[input]
         pos2 = numpy.add(pos, dir)
 
-        def new_pos_func(new_pos, dir):
+        lefts0,rights0 = count_warehouse(warehouse)
+        if lefts != lefts0:
+            print(f"LEFTS {lefts} <> {lefts0}   num {num}")
+            print(f"RIGHTS {rights} <> {rights0}   num {num}")
+            break
+
+        debug = False #num == 1649
+        num += 1
+
+        def new_pos_func(new_pos, dir, debug):
             dir_y = dir[1]
             x = new_pos[0]
             y = new_pos[1]
             at_pos = warehouse[y][x]
+            if debug:
+                print(f"new_pos_func({x},{y}, {dir}) => {at_pos}")
             if at_pos == '#':
                 return False
             if at_pos == '.':
@@ -91,7 +111,8 @@ def main():
                             warehouse[y][x] = '.'
                             return True
                 else:
-                    print(f"up/down  {new_pos}")
+                    if debug:
+                        print(f"up/down  {new_pos}")
 #                    points_to_check = [ numpy.add(new_pos, dir) ]
                     points_to_move = []
                     points_to_check = [ new_pos ]
@@ -100,35 +121,43 @@ def main():
                         check_x,check_y = check_pos
                         at_check_pos = warehouse[check_y][check_x]
 
-                        print(f"at_check_pos {at_check_pos}")
+#                        if debug:
+#                            print(f"at_check_pos {at_check_pos}")
 
                         if at_check_pos == 'O':
                             points_to_check.append(numpy.array([check_x, check_y+dir_y]))
                             move_p = (check_x, check_y)
                             points_to_move.append(move_p)
-                            print(f"O adding {check_pos}")
+                            if debug:
+                                print(f"O adding {check_pos}")
                         elif at_check_pos == '[':
                             points_to_check.append(numpy.array([check_x, check_y+dir_y]))
                             points_to_check.append(numpy.array([check_x+1, check_y+dir_y]))
                             move_p = (check_x, check_y)
                             if move_p not in set(points_to_move):
                                 points_to_move.append(move_p)
-                            print(f"[ adding {move_p}")
+                            if debug:
+                                print(f"[ adding {move_p}")
                         elif at_check_pos == ']':
                             points_to_check.append(numpy.array([check_x, check_y+dir_y]))
                             points_to_check.append(numpy.array([check_x-1, check_y+dir_y]))
                             move_p = (check_x-1, check_y)
                             if move_p not in set(points_to_move):
                                 points_to_move.append(move_p)
+                            if debug:
+                                print(f"] adding {move_p}")
                             #print(f"] adding {numpy.array([check_x-1, check_y])}")
 
                         if at_check_pos == '#':
-                            print(f" > #")
+                            if debug:
+                                print(f" > #")
                             return False
                     # Done
-                    print(f"To Move: {points_to_move}")
+                    if debug:
+                        print(f"To Move: {points_to_move}")
                     if len(points_to_move) > 0:
-                        for point in reversed(points_to_move):
+                        points_to_move = sorted(points_to_move, key=lambda x: x[1], reverse=dir_y==1)
+                        for point in points_to_move:
                             x,y = point
                             at = warehouse[y][x]
                             warehouse[y+dir_y][x] = warehouse[y][x]
@@ -140,7 +169,7 @@ def main():
                         return True
                     return False
 
-        if new_pos_func(pos2, dir):
+        if new_pos_func(pos2, dir, debug):
             pos = pos2
 
     # sum boxes
@@ -149,8 +178,12 @@ def main():
             if warehouse[y][x] == 'O' or warehouse[y][x] == '[':
                 num += y*100 + x
 
-    for x in warehouse:
-        print(f"{x}")
+#    for x in warehouse:
+#        print(f"{x}")
+
+    lefts0, rights0 = count_warehouse(warehouse)
+    if lefts != lefts0 or rights != rights0:
+        print(f"lefts {lefts}/{lefts0}  rights {rights}/{rights0}")
 
     # Output
     print("Part: ", part, " Test: ", test)
@@ -159,7 +192,7 @@ def main():
 if __name__=="__main__":
     main()
 
-##  1510330  too low
+##  1539202  too high
 
 ## Test works. Dammit.
 ##  What edge case goes bad? :/ 
