@@ -16,7 +16,7 @@ arrows = { 0: '<', 1: '^', 2: '>', 3: 'v' }
 best_score = 100000000000
 
 best_path = set()
-best_path_score = 4009 # 11048
+best_path_score = 11048
 
 def walk(data, visited, pos, dir, score, score_board):
     global best_score
@@ -26,7 +26,7 @@ def walk(data, visited, pos, dir, score, score_board):
 #    if at != '#':
 #        print(f"depth {depth}  at {pos} => {at}")
     if pos_ in score_board:
-        if score > score_board[pos_]:
+        if score > score_board[pos_]+1001: # extra 1001 because my heuristics is .. one step weird? :D 
             return 100000000
     score_board[pos_] = score
 
@@ -74,7 +74,7 @@ def main():
     file_name = "test.txt" if test else "input.txt"
 
     if not test:
-        best_path_score = 134588
+        best_path_score = 134588 # hacky AF. 
 
     # Read in file
     file = open(file_name)
@@ -114,6 +114,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
-## part 2. 589 is too low. Slightly off heuristics makes
-##  multiple similar paths not happen. 
