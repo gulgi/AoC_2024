@@ -66,6 +66,7 @@ def walk(data, visited, pos, dir, score, score_board):
 
 def main():
     global best_path 
+    global best_path_score
 
     # Part 1 or 2. Test or not?
     part = Part.Two if set(["2", "two"]) & set(sys.argv) else Part.One
@@ -114,7 +115,5 @@ def main():
 if __name__=="__main__":
     main()
 
-##  1510330  too low
-
-## Test works. Dammit.
-##  What edge case goes bad? :/ 
+## part 2. 589 is too low. Slightly off heuristics makes
+##  multiple similar paths not happen. 
