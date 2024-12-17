@@ -11,20 +11,18 @@ class Part(Enum):
     Two = 2
 
 dirs = { 0: numpy.array([-1,0]), 1: numpy.array([0,-1]), 2: numpy.array([1,0]), 3: numpy.array([0,1]) }
-arrows = { 0: '<', 1: '^', 2: '>', 3: 'v' }
 
-best_score = 100000000000
+best_score = 100000000000 # for some early outs
 
+# Hacky AF way to record the "best path".  Could set by first call, then re-do everything? This is faster. :P 
 best_path = set()
-best_path_score = 11048
+best_path_score = 4009 # 11048
 
 def walk(data, visited, pos, dir, score, score_board):
     global best_score
     global best_path 
     pos_ = (pos[0], pos[1])
     at = data[pos[1]][pos[0]]
-#    if at != '#':
-#        print(f"depth {depth}  at {pos} => {at}")
     if pos_ in score_board:
         if score > score_board[pos_]+1001: # extra 1001 because my heuristics is .. one step weird? :D 
             return 100000000
@@ -33,7 +31,6 @@ def walk(data, visited, pos, dir, score, score_board):
     if pos_ in visited or at == '#':
         return 100000000
     if score > best_score:
-#        print(f"More expensive .. {score} > {best_score}")
         return 100000000
     if at == 'E':
         if score < best_score:
@@ -79,7 +76,6 @@ def main():
     # Read in file
     file = open(file_name)
     data = file.read().split('\n')
-#    data = data.split("\n")
 
     def find_pos(c):
         for y in range(1, len(data)-1):
@@ -96,7 +92,7 @@ def main():
 
     # CODE
 
-    sys.setrecursionlimit(3500)
+    sys.setrecursionlimit(3500)  # Yay! :P   This much is not needed, but ....
 
     score_board = {}
     best_path.add((pos[0], pos[1]))
