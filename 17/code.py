@@ -86,11 +86,51 @@ def main():
         program_output = run_program(A, B, C)
         print(*program_output, sep=",")
     else:
-        for i in tqdm(range(0, 5_000_0000_000)):
+        # Hacky., by hand, ugliness
+
+        start = 0
+        if test:
+            start = 117440-5
+        start = 0o1000000000000000
+        end   = 0o10000000000000000
+
+        # 280195460414481 gives right answer; but is too high!
+          # 7755302670536021 
+
+        # Correct len:    35184372088832 <= x <    281474976710656
+        # Correct len: 01000000000000000 <= x < 010000000000000000
+
+        # Ends-1 in 0: 07000000000000000 <= x < 010000000000000000
+        # Ends-2 in 3: 07400000000000000
+        # Ends-3 in 5: 07450000000000000
+        # Ends-4 in 5: 07454000000000000
+        # Ends-5 in 7: 07454300000000000
+        #     -6    4: 07454300000000000
+        #     -7    4: 07454302000000000
+        #     -8    1: 07454302600000000
+        #     -9    3: 07454302670000000
+        #    -10    0: 07454302670000000
+        #    -11    5: 07454302670500000
+        #    -12    7: 07454302670530000
+        #    -13    3: 07454302670536000
+        #    -14    1: 07454302670536000
+        #    -15    4: 07454302670536020
+        #    -16    2: 07454302670536021
+        # 266932601404433 as well!
+          # 7454302670536021
+        # OUTPUT: 2,4,1,3,7,5,0,3,1,4,4,7,5,5,3,0 
+
+        start = 0o7454302670536021
+
+        for i in tqdm(range(start, end, 1)):
+#            time.sleep(0.01)
             A = i
             B = 0
             C = 0
             program_output = run_program(A, B, C)
+
+#            if A != 0: #% 1024 == 0:
+#                print(f"A {A} {oct(A)}  {program} <> {program_output}")
             if program_output == program:
                 print(f"Done!  A = {A}")
                 num = A
