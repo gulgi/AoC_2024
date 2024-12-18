@@ -173,13 +173,14 @@ def main():
             pos = pos2
 
     # sum boxes
+    num = 0
     for y in range(1, len(warehouse)):
         for x in range(1, len(warehouse[0])):
             if warehouse[y][x] == 'O' or warehouse[y][x] == '[':
                 num += y*100 + x
 
-#    for x in warehouse:
-#        print(f"{x}")
+    for x in warehouse:
+        print(f"{x}")
 
     lefts0, rights0 = count_warehouse(warehouse)
     if lefts != lefts0 or rights != rights0:
