@@ -13,10 +13,8 @@ class Part(Enum):
     One = 1,
     Two = 2
 
-@cache
-def manhattan(a, b):
+def manhattan(a : int, b : int) -> int:
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
-#    return sum(abs(val1-val2) for val1, val2 in zip(a,b))
 
 def main():
     # Part 1 or 2. Test or not?
