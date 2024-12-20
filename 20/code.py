@@ -63,54 +63,16 @@ def main():
 
     def func1():
         G = create_nx_graph()
-        shortest_path = nx.shortest_path(G, start, end)
-        shortest_path_len = nx.shortest_path_length(G, start, end)
-        already_tried = set()
+        shortest_path = nx.shortest_path(G, start, end)        
+        shortest_path_len = len(shortest_path)
 
-        def add_extra_point(x, y, Graph):
-            if x < 1 or x >= width-1 or y < 1 or y >= height-1:
-                return False, None
-
-            pos = (x,y)
-            if pos in already_tried:
-                return False, None
-            if data[y][x] != '#':
-                return False, None
-            already_tried.add(pos)
-
-            edges = []
-            if data[y-1][x] == '.':
-                edges.append((x, y-1))
-            if data[y][x-1] == '.':
-                edges.append((x-1, y))
-            if data[y+1][x] == '.':
-                edges.append((x, y+1))
-            if data[y][x+1] == '.':
-                edges.append((x+1, y))
-
-            if len(edges) == 0:
-                return False, None
-
-            G_ = Graph.copy()
-            G_.add_node(pos)
-            for edge in edges:
-                G_.add_edge(pos, edge)
-            return True, G_
-
-        for point in tqdm(shortest_path):
-            x,y = point
-            do, G2 = add_extra_point(x-1, y, G)
-            if do:
-                path_lenghts[nx.shortest_path_length(G2, start, end)] += 1
-            do, G2 = add_extra_point(x+1, y, G)
-            if do:
-                path_lenghts[nx.shortest_path_length(G2, start, end)] += 1
-            do, G2 = add_extra_point(x, y-1, G)
-            if do:
-                path_lenghts[nx.shortest_path_length(G2, start, end)] += 1
-            do, G2 = add_extra_point(x, y+1, G)
-            if do:
-                path_lenghts[nx.shortest_path_length(G2, start, end)] += 1
+        for point_index in tqdm(range(len(shortest_path[:-2]))):
+            point = shortest_path[point_index]
+            for point2_index in range(shortest_path_len-1, point_index+4, -1):
+                point2 = shortest_path[point2_index]
+                dist = manhattan(point, point2)
+                if dist == 2:
+                    path_lenghts[point_index + dist + (shortest_path_len-point2_index)] += 1
         return shortest_path_len
 
     def func2():
@@ -118,9 +80,9 @@ def main():
         shortest_path = nx.shortest_path(G, start, end)        
         shortest_path_len = len(shortest_path)
 
-        for point_index in tqdm(range(len(shortest_path[:-10]))):
+        for point_index in tqdm(range(len(shortest_path[:-2]))):
             point = shortest_path[point_index]
-            for point2_index in range(shortest_path_len-1, point_index+10, -1):
+            for point2_index in range(shortest_path_len-1, point_index+4, -1):
                 point2 = shortest_path[point2_index]
                 dist = manhattan(point, point2)
                 if dist <= 20:
