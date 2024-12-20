@@ -41,8 +41,6 @@ def main():
     data[end[1]][end[0]] = '.'
 
     path_lenghts = DefaultDict(lambda: 0)
-    width = len(data[0])
-    height = len(data)
 
     def create_nx_graph():
         G = nx.Graph()
@@ -61,7 +59,7 @@ def main():
                         G.add_edge(pos, (x+1, y))
         return G
 
-    def func1():
+    def func(cheat_time):
         G = create_nx_graph()
         shortest_path = nx.shortest_path(G, start, end)        
         shortest_path_len = len(shortest_path)
@@ -71,40 +69,20 @@ def main():
             for point2_index in range(shortest_path_len-1, point_index+4, -1):
                 point2 = shortest_path[point2_index]
                 dist = manhattan(point, point2)
-                if dist == 2:
+                if dist <= cheat_time:
                     path_lenghts[point_index + dist + (shortest_path_len-point2_index)] += 1
         return shortest_path_len
 
-    def func2():
-        G = create_nx_graph()
-        shortest_path = nx.shortest_path(G, start, end)        
-        shortest_path_len = len(shortest_path)
-
-        for point_index in tqdm(range(len(shortest_path[:-2]))):
-            point = shortest_path[point_index]
-            for point2_index in range(shortest_path_len-1, point_index+4, -1):
-                point2 = shortest_path[point2_index]
-                dist = manhattan(point, point2)
-                if dist <= 20:
-                    path_lenghts[point_index + dist + (shortest_path_len-point2_index)] += 1
-        return shortest_path_len
-
+    cheat_time = 2 if part == Part.One else 20
+    shortest_path = func(cheat_time)
+    cutoff = 50 if test else 100
     num = 0
-    if part == Part.One:
-        shortest_path = func1()
-        for item in path_lenghts.items():
-            num_item, count = item
-            if shortest_path - num_item >= 100:
-                num += count
-    else:
-        shortest_path = func2()
-        cutoff = 50 if test else 100
-        for item in path_lenghts.items():
-            num_item, count = item
-            if shortest_path - num_item >= cutoff:
-                num += count
-                if test:
-                    print(f"{count} that saves {shortest_path-num_item}")
+    for item in path_lenghts.items():
+        num_item, count = item
+        if shortest_path - num_item >= cutoff:
+            num += count
+            if test:
+                print(f"{count} that saves {shortest_path-num_item}")
 
     # Output
     print("Part: ", part, " Test: ", test)
