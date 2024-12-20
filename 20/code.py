@@ -26,8 +26,6 @@ def main():
 
     # Read in file
     file = open(file_name)
-    # Read in file
-    file = open(file_name)
     data = list(map(list, file.read().split('\n')))
 
     def find_pos(c):
@@ -46,27 +44,28 @@ def main():
     width = len(data[0])
     height = len(data)
 
-    def func1():
-        print(f"{start} => {end}")
-        map = data.copy()
+    def create_nx_graph():
         G = nx.Graph()
-        already_tried = set()
-        for y in range(0, len(map)):
-            for x in range(0, len(map[0])):
-                if map[y][x] == '.':
+        for y in range(0, len(data)):
+            for x in range(0, len(data[0])):
+                if data[y][x] == '.':
                     pos = (x, y)
                     G.add_node(pos)
-                    already_tried.add(pos)
-                    if map[y-1][x] == '.':
+                    if data[y-1][x] == '.':
                         G.add_edge(pos, (x, y-1))
-                    if map[y][x-1] == '.':
+                    if data[y][x-1] == '.':
                         G.add_edge(pos, (x-1, y))
-                    if map[y+1][x] == '.':
+                    if data[y+1][x] == '.':
                         G.add_edge(pos, (x, y+1))
-                    if map[y][x+1] == '.':
+                    if data[y][x+1] == '.':
                         G.add_edge(pos, (x+1, y))
+        return G
+
+    def func1():
+        G = create_nx_graph()
         shortest_path = nx.shortest_path(G, start, end)
         shortest_path_len = nx.shortest_path_length(G, start, end)
+        already_tried = set()
 
         def add_extra_point(x, y, Graph):
             if x < 1 or x >= width-1 or y < 1 or y >= height-1:
@@ -75,18 +74,18 @@ def main():
             pos = (x,y)
             if pos in already_tried:
                 return False, None
-            if map[y][x] != '#':
+            if data[y][x] != '#':
                 return False, None
             already_tried.add(pos)
 
             edges = []
-            if map[y-1][x] == '.':
+            if data[y-1][x] == '.':
                 edges.append((x, y-1))
-            if map[y][x-1] == '.':
+            if data[y][x-1] == '.':
                 edges.append((x-1, y))
-            if map[y+1][x] == '.':
+            if data[y+1][x] == '.':
                 edges.append((x, y+1))
-            if map[y][x+1] == '.':
+            if data[y][x+1] == '.':
                 edges.append((x+1, y))
 
             if len(edges) == 0:
@@ -115,34 +114,17 @@ def main():
         return shortest_path_len
 
     def func2():
-        map = data.copy()
-        G = nx.Graph()
-        for y in range(0, len(map)):
-            for x in range(0, len(map[0])):
-                if map[y][x] == '.':
-                    pos = (x, y)
-                    G.add_node(pos)
-                    if map[y-1][x] == '.':
-                        G.add_edge(pos, (x, y-1), length=1)
-                    if map[y][x-1] == '.':
-                        G.add_edge(pos, (x-1, y), length=1)
-                    if map[y+1][x] == '.':
-                        G.add_edge(pos, (x, y+1), length=1)
-                    if map[y][x+1] == '.':
-                        G.add_edge(pos, (x+1, y), length=1)
+        G = create_nx_graph()
         shortest_path = nx.shortest_path(G, start, end)        
         shortest_path_len = len(shortest_path)
 
         for point_index in tqdm(range(len(shortest_path[:-10]))):
             point = shortest_path[point_index]
-
             for point2_index in range(shortest_path_len-1, point_index+10, -1):
                 point2 = shortest_path[point2_index]
                 dist = manhattan(point, point2)
                 if dist <= 20:
                     path_lenghts[point_index + dist + (shortest_path_len-point2_index)] += 1
-            #break
-
         return shortest_path_len
 
     num = 0
