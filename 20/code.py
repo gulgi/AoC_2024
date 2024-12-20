@@ -41,20 +41,11 @@ def main():
     path_lenghts = DefaultDict(lambda: 0)
 
     def create_nx_graph():
-        G = nx.Graph()
+        G = nx.grid_graph((len(data[0]), len(data)))
         for y in range(0, len(data)):
             for x in range(0, len(data[0])):
-                if data[y][x] == '.':
-                    pos = (x, y)
-                    G.add_node(pos)
-                    if data[y-1][x] == '.':
-                        G.add_edge(pos, (x, y-1))
-                    if data[y][x-1] == '.':
-                        G.add_edge(pos, (x-1, y))
-                    if data[y+1][x] == '.':
-                        G.add_edge(pos, (x, y+1))
-                    if data[y][x+1] == '.':
-                        G.add_edge(pos, (x+1, y))
+                if data[y][x] == '#':
+                    G.remove_node((x,y))
         return G
 
     def func(cheat_time):
