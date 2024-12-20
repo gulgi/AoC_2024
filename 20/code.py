@@ -19,8 +19,6 @@ def manhattan(a, b):
 #    return sum(abs(val1-val2) for val1, val2 in zip(a,b))
 
 def main():
-    global width
-
     # Part 1 or 2. Test or not?
     part = Part.Two if set(["2", "two"]) & set(sys.argv) else Part.One
     test = True if "test" in sys.argv else False
@@ -116,9 +114,7 @@ def main():
                 path_lenghts[nx.shortest_path_length(G2, start, end)] += 1
         return shortest_path_len
 
-
     def func2():
-        print(f"{start} => {end}")
         map = data.copy()
         G = nx.Graph()
         for y in range(0, len(map)):
@@ -134,33 +130,17 @@ def main():
                         G.add_edge(pos, (x, y+1), length=1)
                     if map[y][x+1] == '.':
                         G.add_edge(pos, (x+1, y), length=1)
-        shortest_path = nx.shortest_path(G, start, end)
-        shortest_path_len = nx.shortest_path_length(G, start, end)
-
-        def add_path(point1, point2, distance, Graph):
-            G_ = Graph.copy()
-            G_.add_edge(point1, point2, length=distance)
-            return G_
-        
+        shortest_path = nx.shortest_path(G, start, end)        
         shortest_path_len = len(shortest_path)
 
         for point_index in tqdm(range(len(shortest_path[:-10]))):
-#        for point_index in range(len(shortest_path[:-10])):
             point = shortest_path[point_index]
-#            x,y = point
-#            dist_to_end = manhattan(point, end)
-#            if dist_to_end <= 20:
-##                print(f"Dist to end {dist_to_end}")
- #               G2 = add_path(point, end, dist_to_end, G)
- #               path_lenghts[nx.shortest_path_length(G2, start, end)] += 1
- #               continue
 
             for point2_index in range(shortest_path_len-1, point_index+10, -1):
                 point2 = shortest_path[point2_index]
                 dist = manhattan(point, point2)
                 if dist <= 20:
-                    G2 = add_path(point, point2, dist, G)
-                    path_lenghts[nx.shortest_path_length(G2, start, end, weight='length')] += 1
+                    path_lenghts[point_index + dist + (shortest_path_len-point2_index)] += 1
             #break
 
         return shortest_path_len
@@ -174,13 +154,13 @@ def main():
                 num += count
     else:
         shortest_path = func2()
+        cutoff = 50 if test else 100
         for item in path_lenghts.items():
             num_item, count = item
-            if shortest_path - num_item >= 50:
+            if shortest_path - num_item >= cutoff:
                 num += count
-#            num_item, count = item
-#            if num_item < shortest_path:
-#                print(f"{count} that saves {shortest_path-num_item}")
+                if test:
+                    print(f"{count} that saves {shortest_path-num_item}")
 
     # Output
     print("Part: ", part, " Test: ", test)
