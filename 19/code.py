@@ -7,8 +7,6 @@ class Part(Enum):
     Two = 2
 
 def main():
-    global width
-
     # Part 1 or 2. Test or not?
     part = Part.Two if set(["2", "two"]) & set(sys.argv) else Part.One
     test = True if "test" in sys.argv else False
